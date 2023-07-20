@@ -36,6 +36,7 @@ const Form = ({ setPacientes }) => {
           Administralos
         </span>
       </p>
+      
 
       <form className="bg-white shadow-md rounded-lg py-10 px-5"
             onSubmit={handleSubmit}>
