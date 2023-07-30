@@ -4,7 +4,9 @@ import App from './App.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode> //realize doble reenderizado se recomienda solo usarlo en desarrollo
+  <>
     <App />
-  </React.StrictMode>,
+  </>
+  // </React.StrictMode>,
 )

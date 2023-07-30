@@ -1,28 +1,78 @@
 import {useState, useEffect} from 'react'
+import Error from './Error'
 
-const Form = ({ setPacientes }) => {
+const Form = ({ pacientes, setPacientes, paciente, setPaciente }) => {
 
   const [mascota, setMascota] = useState('')
   const [propietario, setPropietario] = useState('')
   const [email, setEmail] = useState('')
   const [fechaAlta, setFechaAlta] = useState('')
   const [sintomas, setSintomas] = useState('')
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(false)
+
+  useEffect( () => {
+    if(Object.keys(paciente).length > 0){
+      setMascota(paciente.mascota)
+      setPropietario(paciente.propietario)
+      setEmail(paciente.email)
+      setFechaAlta(paciente.fechaAlta)
+      setSintomas(paciente.sintomas)
+    }
+  }, [paciente])
+
 
   const handleSubmit = (e) => {
+    
     
     e.preventDefault();
 
     //validaciones
     if([mascota, propietario, email, fechaAlta, sintomas].includes('')){
-      console.log('todos los campos son obligatorios')
       setError(true)
       return;
     }
 
     setError(false)
 
-    setPacientes(nombre)
+    const generarId = () => {
+      const random = Math.random().toString(36).substr(2);
+      const fecha = Date.now().toString(36);
+
+      return random + fecha;
+    }
+
+    //objeto datos paciente
+    const objetoPaciente = {
+      mascota,
+      propietario,
+      email,
+      fechaAlta,
+      sintomas
+    }
+
+    if(paciente.id){
+      //editando
+      objetoPaciente.id = paciente.id
+      //actualizando arreglo pacientes
+      const pacientesActualizados = pacientes.map( pacienteState => 
+        pacienteState.id === paciente.id ? objetoPaciente : pacienteState
+      )
+      //asignando nuevo arreglo pacientes
+      setPacientes(pacientesActualizados)
+      setPaciente({})
+    }else{
+      //nuevo
+      objetoPaciente.id = generarId()
+      setPacientes([...pacientes, objetoPaciente]);
+    }
+
+    //Reiniciar form
+    setMascota('')
+    setPropietario('')
+    setEmail('')
+    setFechaAlta('')
+    setSintomas('')
+
   }
 
   return (
@@ -78,11 +128,11 @@ const Form = ({ setPacientes }) => {
             onChange={ (e) => setEmail(e.target.value) }/>
         </div>
         <div className="mb-3">
-          <label htmlFor="alta" className="block text-gray-700 font-bold">
+          <label htmlFor="fechaAlta" className="block text-gray-700 font-bold">
             Fecha alta
           </label>
           <input 
-            id="alta" 
+            id="fechaAlta" 
             type="date" 
             className="border-2 w-full p-2 mt-2 placeholder-gray-300 rounded-md"
             value={fechaAlta}
@@ -97,20 +147,22 @@ const Form = ({ setPacientes }) => {
             cols="30" 
             rows="5" 
             className="border-2 w-full p-2 mt-2 placeholder-gray-300 rounded-md"
+            value={sintomas}
             onChange={ (e) => setSintomas(e.target.value) }>
-              {sintomas}
+              
           </textarea>
         </div>
         <input 
           type="submit" 
           className="bg-green-700 w-full text-white p-3 uppercase font-bold hover:bg-green-800 cursor-pointer transition-all rounded" 
-          value='Agregar paciente' 
+          value={ paciente.id ? 'Editar paciente' : 'Agregar paciente'} 
           />
-        { error && (
-          <div className='bg-red-600 p-5 text-white rounded text-center font-bold mt-3'>
-            <p>Todos los campos son obligatorios</p>
-          </div>
-        )}
+        { 
+          error &&  
+            <Error 
+              mensaje='Todos los campos son obligatorios'
+            />
+        }
       </form>
 
     </div>
